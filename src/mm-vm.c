@@ -189,7 +189,7 @@ int pg_getpage(struct mm_struct *mm, int pgn, int *fpn, struct pcb_t *caller)
 
         find_victim_page(caller->mm, &vicpgn);
         vicfpn = PAGING_FPN(caller->mm->pgd[vicpgn]);
-        MEMPHY_get_freefp(caller->active_mswp, &swpfpn)
+        MEMPHY_get_freefp(caller->active_mswp, &swpfpn);
         __swap_cp_page(caller->mram, vicfpn, caller->active_mswp, swpfpn);
         __swap_cp_page(caller->active_mswp, tgtfpn, caller->mram, vicfpn);
         pte_set_swap(&mm->pgd[vicpgn], 0, swpfpn);
@@ -417,8 +417,9 @@ int inc_vma_limit(struct pcb_t *caller, int vmaid, int inc_sz)
 
   /*Validate overlap of obtained region */
   if (validate_overlap_vm_area(caller, vmaid, area->rg_start, area->rg_end) < 0)
+  {
     return -1; /*Overlap and failed allocation */
-
+  }
     /* The obtained vm area (only)
     * now will be alloc real ram region */
     cur_vma->vm_end += inc_sz;
