@@ -108,7 +108,7 @@ int vmap_page_range(struct pcb_t *caller, // process call
         enlist_pgn_node(&caller->mm->fifo_pgn, pgn+pgit);
     }
     for (; pgit < pgnum; pgit++){
-        if (pgn + pgit >= MAX_NO_PGTBL) return -1;
+        if (pgn + pgit >= PAGING_CPU_BUS_WIDTH) return -1;
         uint32_t *pte = &pgt[pgn + pgit];
         int swpoff = 0;
         if (MEMPHY_get_freefp(caller->active_mswp, &swpoff) == 0){
@@ -224,7 +224,7 @@ int init_mm(struct mm_struct *mm, struct pcb_t *caller)
 {
   struct vm_area_struct * vma = malloc(sizeof(struct vm_area_struct));
 
-  mm->pgd = malloc(MAX_NO_PGTBL * sizeof(uint32_t));
+  mm->pgd = malloc(PAGING_CPU_BUS_WIDTH * sizeof(uint32_t));
   /* By default the owner comes with at least one vma */
   vma->vm_id = 1;
   vma->vm_start = 0;
