@@ -86,7 +86,6 @@ int vmap_page_range(struct pcb_t *caller, // process call
               struct vm_rg_struct *ret_rg)// return mapped region, the real mapped fp
 {                                         // no guarantee all given pages are mapped
     //uint32_t * pte = malloc(sizeof(uint32_t));
-    //printf("vmap_page_range exec\n");
     struct framephy_struct *fpit = malloc(sizeof(struct framephy_struct));
     //int  fpn;
     int pgit = 0;
@@ -96,33 +95,25 @@ int vmap_page_range(struct pcb_t *caller, // process call
 
     fpit->fp_next = frames;
 
-    /* TODO map range of frame to address space
-    *      [addr to addr + pgnum*PAGING_PAGESZ
-    *      in page table caller->mm->pgd[]
-    */
-    uint32_t* pgtbl = caller->mm->pgd;
+    uint32_t* pgt = caller->mm->pgd;
     ret_rg->rg_end = addr + pgnum * PAGING_PAGESZ;
     for (; pgit < pgnum; pgit++){
-        if (pgn + pgit >= MAX_NO_PGTBL) return -1;
-        uint32_t *pte = &pgtbl[pgn + pgit];
+        if (pgn + pgit >= PAGING_CPU_BUS_WIDTH) return -1;
+        uint32_t *pte = &pgt[pgn + pgit];
         if (fpit->fp_next == NULL) break;
         int fpn = fpit->fp_next->fpn;
         pte_set_fpn(pte, fpn);
 
         fpit = fpit->fp_next;
-
-        /* Tracking for later page replacement activities (if needed)
-        * Enqueue new usage page */
         enlist_pgn_node(&caller->mm->fifo_pgn, pgn+pgit);
     }
     for (; pgit < pgnum; pgit++){
         if (pgn + pgit >= MAX_NO_PGTBL) return -1;
-        uint32_t *pte = &pgtbl[pgn + pgit];
+        uint32_t *pte = &pgt[pgn + pgit];
         int swpoff = 0;
         if (MEMPHY_get_freefp(caller->active_mswp, &swpoff) == 0){
             pte_set_swap(pte, 0, swpoff);
         } else {
-            printf("Out of memory\n");
             return -3000;
         }
     }
@@ -140,7 +131,6 @@ int alloc_pages_range(struct pcb_t *caller, int req_pgnum, struct framephy_struc
 {
   int pgit, fpn;
   //struct framephy_struct *newfp_str;
-  //printf("alloc_pages_range\n");
   for(pgit = 0; pgit < req_pgnum; pgit++)
   {
     if(MEMPHY_get_freefp(caller->mram, &fpn) == 0)
@@ -180,26 +170,25 @@ int vm_map_ram(struct pcb_t *caller, int astart, int aend, int mapstart, int inc
    *in endless procedure of swap-off to get frame and we have not provide 
    *duplicate control mechanism, keep it simple
    */
-  printf("vm_map_ram\n");
   ret_alloc = alloc_pages_range(caller, incpgnum, &frm_lst);
 
   if (ret_alloc < 0 && ret_alloc != -3000)
     return -1;
 
   /* Out of memory */
-//    if (ret_alloc == -3000)
-//    {
+   if (ret_alloc == -3000)
+   {
 #ifdef MMDBG
         printf("OOM: vm_map_ram out of memory \n");
 #endif
-//        return -1;
-//    }
+       return -1;
+   }
 
   /* it leaves the case of memory is enough but half in ram, half in swap
    * do the swaping all to swapper to get the all in ram */
   return vmap_page_range(caller, mapstart, incpgnum, frm_lst, ret_rg);
 
-//  return 0;
+  return 0;
 }
 
 /* Swap copy content page from source frame to destination frame 
@@ -359,7 +348,7 @@ int print_pgtbl(struct pcb_t *caller, uint32_t start, uint32_t end)
 
   printf("print_pgtbl: %d - %d\n", start, end);
   if (caller == NULL) {printf("NULL caller\n"); return -1;}
-  // printf("\n");
+  printf("\n");
 
 
   for(pgit = pgn_start; pgit < pgn_end; pgit++)

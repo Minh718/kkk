@@ -6,7 +6,7 @@
 
 #include "mm.h"
 #include <stdlib.h>
-#include <stdio.h>   //ADDING BY STUDENT
+#include <stdio.h> 
 /*
  *  MEMPHY_mv_csr - move MEMPHY cursor
  *  @mp: memphy struct
@@ -158,16 +158,9 @@ int MEMPHY_get_freefp(struct memphy_struct *mp, int *retfpn)
 
 int MEMPHY_dump(struct memphy_struct * mp)
 {
-    /*TODO dump memphy content mp->storage 
-     *     for tracing the memory content
-     */
-    printf("=====MEMPHY_DUMP EXCEPT ADDRESS HAS VALUE ZERO=====\n");
-    char s1[] = "ADDRESS";
-    char s2[] = "VALUE";
-    printf("%8s|%6s\n", s1, s2);
     for (int i = 0; i < mp->maxsz; i++) {
         if (mp->storage[i] != 0)
-            printf("%08x: %d\n", i ,mp->storage[i]);
+            printf("Address: %08x: Value: %d\n", i ,mp->storage[i]);
     }
     return 0;
 }
