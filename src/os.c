@@ -193,7 +193,9 @@ static void read_config(const char * path) {
 }
 
 int main(int argc, char * argv[]) {
-	printf("%d okeoek\n", PAGING_PGN(500));
+	printf("%d okeoek\n", PAGING_PGN(255));
+	printf("%d okeoek\n", PAGING_PGN(256));
+	printf("%d okeoek\n", PAGING_PGN(257));
 	/* Read config */
 	if (argc != 2) {
 		printf("Usage: os [path to configure file]\n");
