@@ -184,7 +184,7 @@ int MEMPHY_put_freefp(struct memphy_struct *mp, int fpn)
  */
 int init_memphy(struct memphy_struct *mp, int max_size, int randomflg)
 {
-   printf("%d, %d okeoekeokeo\n", max_size, sizeof(BYTE))
+   printf("%d, %ld okeoekeokeo\n", max_size, sizeof(BYTE));
    mp->storage = (BYTE *)malloc(max_size*sizeof(BYTE));
    mp->maxsz = max_size;
 
