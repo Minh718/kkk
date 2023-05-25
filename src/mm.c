@@ -100,7 +100,7 @@ int vmap_page_range(struct pcb_t *caller, // process call
 
 
     for (; pgit < pgnum; pgit++){
-        if (fpit == NUL) return -1;
+        if (fpit == NULL) return -1;
         uint32_t *pte = &pgtbl[pgn + pgit];
         if (fpit->fp_next == NULL) break;
         fpit = fpit->fp_next;
