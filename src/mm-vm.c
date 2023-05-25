@@ -310,7 +310,7 @@ int __write(struct pcb_t *caller, int vmaid, int rgid, int offset, BYTE value)
   
   if(currg == NULL || cur_vma == NULL) /* Invalid memory identify */
 	  return -1;
-
+printf("%d, okeoke" ,currg->rg_start + offset)
   pg_setval(caller->mm, currg->rg_start + offset, value, caller);
 
   return 0;
