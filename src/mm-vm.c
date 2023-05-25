@@ -103,12 +103,12 @@ int __alloc(struct pcb_t *caller, int vmaid, int rgid, int size, int *alloc_addr
      }
 
     struct vm_area_struct *cur_vma = get_vma_by_num(caller->mm, vmaid);
-    int inc_sz = PAGING_PAGE_ALIGNSZ(size);
-    int old_sbrk = cur_vma->sbrk;
+    int inc_sz = PAGING_PAGE_ALIGNSZ(size); //200 -> 256, 300 -> 512
+    int old_sbrk = cur_vma->sbrk; // = 0
 
     inc_vma_limit(caller, vmaid, inc_sz);
 
-
+//
     if (get_free_vmrg_area(caller, vmaid, size, &rgnode) != 0) {
         return -1;
     }
@@ -186,6 +186,8 @@ int pg_getpage(struct mm_struct *mm, int pgn, int *fpn, struct pcb_t *caller)
         int vicfpn;
 
         int tgtfpn = PAGING_SWP(pte);//the target frame storing our variable
+        printf("%d KKKK\n", PAGING_PAGE_PRESENT(pte));
+        printf("%d\n", tgtfpn);
 
         find_victim_page(caller->mm, &vicpgn);
         vicfpn = PAGING_FPN(caller->mm->pgd[vicpgn]);
@@ -236,7 +238,6 @@ int pg_setval(struct mm_struct *mm, int addr, BYTE value, struct pcb_t *caller)
   int pgn = PAGING_PGN(addr);
   int off = PAGING_OFFST(addr);
   int fpn;
-
   /* Get the page to MEMRAM, swap from MEMSWAP if needed */
   if(pg_getpage(mm, pgn, &fpn, caller) != 0) 
         return -1; /* invalid page access */
@@ -413,7 +414,7 @@ int inc_vma_limit(struct pcb_t *caller, int vmaid, int inc_sz)
     struct vm_rg_struct *area = get_vm_area_node_at_brk(caller, vmaid, inc_sz, inc_amt);
     struct vm_area_struct *cur_vma = get_vma_by_num(caller->mm, vmaid);
 
-    int old_end = cur_vma->vm_end;
+    int old_end = cur_vma->vm_end; // = 0
 
   /*Validate overlap of obtained region */
   if (validate_overlap_vm_area(caller, vmaid, area->rg_start, area->rg_end) < 0)
@@ -469,7 +470,7 @@ int get_free_vmrg_area(struct pcb_t *caller, int vmaid, int size, struct vm_rg_s
   /* Traverse on list of free vm region to find a fit space */
   while (rgit != NULL)
   {
-    if (rgit->rg_start + size <= rgit->rg_end)
+    if (rgit->rg_start + size <= rgit->rg_end) // 0 + 200 <= 256 false
     { /* Current region has enough space */
       newrg->rg_start = rgit->rg_start;
       newrg->rg_end = rgit->rg_start + size;

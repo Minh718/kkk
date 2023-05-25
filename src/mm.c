@@ -95,21 +95,21 @@ int vmap_page_range(struct pcb_t *caller, // process call
 
     fpit->fp_next = frames;
 
-    uint32_t* pgt = caller->mm->pgd;
+    uint32_t* pgtbl = caller->mm->pgd;
     ret_rg->rg_end = addr + pgnum * PAGING_PAGESZ;
-    for (; pgit < pgnum; pgit++){
-        if (pgn + pgit >= PAGING_CPU_BUS_WIDTH) return -1;
-        uint32_t *pte = &pgt[pgn + pgit];
-        if (fpit->fp_next == NULL) break;
-        int fpn = fpit->fp_next->fpn;
-        pte_set_fpn(pte, fpn);
 
+
+    for (; pgit < pgnum; pgit++){
+        if (fpit == NUL) return -1;
+        uint32_t *pte = &pgtbl[pgn + pgit];
+        if (fpit->fp_next == NULL) break;
         fpit = fpit->fp_next;
+        int fpn = fpit->fpn;
+        pte_set_fpn(pte, fpn);
         enlist_pgn_node(&caller->mm->fifo_pgn, pgn+pgit);
     }
     for (; pgit < pgnum; pgit++){
-        if (pgn + pgit >= PAGING_CPU_BUS_WIDTH) return -1;
-        uint32_t *pte = &pgt[pgn + pgit];
+        uint32_t *pte = &pgtbl[pgn + pgit];
         int swpoff = 0;
         if (MEMPHY_get_freefp(caller->active_mswp, &swpoff) == 0){
             pte_set_swap(pte, 0, swpoff);
