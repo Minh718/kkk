@@ -200,6 +200,7 @@ int pg_getpage(struct mm_struct *mm, int pgn, int *fpn, struct pcb_t *caller)
     }
     *fpn = PAGING_FPN(pte);
         printf("%d CLMFDSFDSLFKJDSLKFJL\n",  PAGING_FPN(pte));
+        printf("%d CLMFDSFDSLFKJDSLKFJL\n",  (0 << PAGING_ADDR_FPN_LOBIT) + 20);
 
     return 0;
 }
