@@ -186,8 +186,6 @@ int pg_getpage(struct mm_struct *mm, int pgn, int *fpn, struct pcb_t *caller)
         int vicfpn;
 
         int tgtfpn = PAGING_SWP(pte);//the target frame storing our variable
-        printf("%d KKKK\n", PAGING_PAGE_PRESENT(pte));
-        printf("%d\n", tgtfpn);
 
         find_victim_page(caller->mm, &vicpgn);
         vicfpn = PAGING_FPN(caller->mm->pgd[vicpgn]);
@@ -199,8 +197,6 @@ int pg_getpage(struct mm_struct *mm, int pgn, int *fpn, struct pcb_t *caller)
         enlist_pgn_node(&caller->mm->fifo_pgn, pgn);
     }
     *fpn = PAGING_FPN(pte);
-        printf("%d CLMFDSFDSLFKJDSLKFJL\n",  PAGING_FPN(pte));
-        printf("%d CLMFDSFDSLFKJDSLKFJL\n",  (0 << PAGING_ADDR_FPN_LOBIT) + 20);
 
     return 0;
 }
@@ -310,7 +306,6 @@ int __write(struct pcb_t *caller, int vmaid, int rgid, int offset, BYTE value)
   
   if(currg == NULL || cur_vma == NULL) /* Invalid memory identify */
 	  return -1;
-printf("%ld, okeoke" ,currg->rg_start + offset);
   pg_setval(caller->mm, currg->rg_start + offset, value, caller);
 
   return 0;

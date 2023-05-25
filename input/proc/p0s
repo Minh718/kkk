@@ -3,6 +3,7 @@ calc
 alloc 200 0
 alloc 200 2
 alloc 200 1
+alloc 200 3
 free 0
 write 100 1 20
 read 1 20 20
