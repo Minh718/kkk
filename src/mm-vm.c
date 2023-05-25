@@ -198,9 +198,8 @@ int pg_getpage(struct mm_struct *mm, int pgn, int *fpn, struct pcb_t *caller)
         pte_set_fpn(&pte, vicfpn);
         enlist_pgn_node(&caller->mm->fifo_pgn, pgn);
     }
-        printf("%d KKKK\n", PAGING_PAGE_PRESENT(pte));
-        printf("%d CLMFDSFDSLFKJDSLKFJL\n",  PAGING_SWP(pte));
     *fpn = PAGING_FPN(pte);
+        printf("%d CLMFDSFDSLFKJDSLKFJL\n",  PAGING_FPN(pte));
 
     return 0;
 }
