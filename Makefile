@@ -1,6 +1,6 @@
 
 INC = -Iinclude
-LIB = -lpthread
+LIB = -lpthread dd
 
 SRC = src
 OBJ = obj
