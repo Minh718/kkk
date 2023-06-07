@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static uint32_t avail_pid = 1;
+static uint32_t avail_pid = 2;
 
 #define OPT_CALC	"calc"
 #define OPT_ALLOC	"alloc"
